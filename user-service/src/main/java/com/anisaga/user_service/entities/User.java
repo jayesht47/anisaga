@@ -34,10 +34,8 @@ public class User implements UserDetails {
     @JsonIgnore
     private boolean enabled;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
+    @JsonIgnore
+    private Collection<? extends GrantedAuthority> authorities;
 
     @Override
     public String getPassword() {
