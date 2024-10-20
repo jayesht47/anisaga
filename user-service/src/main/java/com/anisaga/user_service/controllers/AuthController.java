@@ -23,9 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -94,7 +92,9 @@ public class AuthController {
                     user.setAccountNonExpired(true);
                     user.setAccountNonLocked(true);
                     user.setCredentialsNonExpired(true);
-                    user.setAuthorities(Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
+                    List<String> roles = new ArrayList<>();
+                    roles.add("user");
+                    user.setRoles(roles);
                     userService.upsertUser(user);
                     String token = jwtUtil.generateToken(user);
                     responseMap.put("error", false);

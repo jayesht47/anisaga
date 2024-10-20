@@ -4,6 +4,7 @@ import com.anisaga.user_service.entities.User;
 import com.anisaga.user_service.exceptions.DuplicateUserNameException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -15,6 +16,6 @@ public interface UserService {
 
     void deleteUser(User user);
 
-
+    List<User> getAllUsers();
     User getUserByUserName(String userName);
 }
