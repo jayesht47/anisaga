@@ -19,9 +19,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User upsertUser(User user) throws DuplicateUserNameException {
-        User existingUser = getUserByUserName(user.getUsername());
-        if (existingUser != null)
-            throw new DuplicateUserNameException(String.format("user already present with userName : %s", user.getUsername()));
+        try {
+            User existingUser = getUserByUserName(user.getUsername());
+            if (existingUser != null)
+                throw new DuplicateUserNameException(String.format("user already present with userName : %s", user.getUsername()));
+        } catch (UsernameNotFoundException ignored) {
+            // ignoring since in upsert if the user does not exist we will create it since call would be from register user controller
+        }
         return userRepository.save(user);
     }
 
@@ -41,10 +45,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUserName(String userName) {
+    public User getUserByUserName(String userName) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUserName(userName);
         if (user.isPresent()) return user.get();
-        return null; // user not found
+        throw new UsernameNotFoundException(String.format("userName not found for user %s", userName));
     }
 
 }

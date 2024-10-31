@@ -61,4 +61,12 @@ public class ControlAdvisor {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseMap);
     }
 
+    @ExceptionHandler(value = RegistrationValidationException.class)
+    public ResponseEntity<?> RegistrationValidationException(RegistrationValidationException e) {
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("error", true);
+        responseMap.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
+    }
+
 }

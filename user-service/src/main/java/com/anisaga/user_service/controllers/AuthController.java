@@ -4,6 +4,7 @@ import com.anisaga.user_service.VO.LoginUser;
 import com.anisaga.user_service.VO.RegisterUser;
 import com.anisaga.user_service.entities.User;
 import com.anisaga.user_service.exceptions.DuplicateUserNameException;
+import com.anisaga.user_service.exceptions.RegistrationValidationException;
 import com.anisaga.user_service.services.UserService;
 import com.anisaga.user_service.services.impl.UserDetailService;
 import com.anisaga.user_service.util.JwtUtil;
@@ -80,12 +81,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterUser registerUser) throws DuplicateUserNameException {
+    public ResponseEntity<?> register(@RequestBody RegisterUser registerUser) throws DuplicateUserNameException, RegistrationValidationException {
         Map<String, Object> responseMap = new HashMap<>();
         try {
             if (registerUser != null) {
                 User user = new User();
-                if (!registerUser.getUserName().isBlank() && !registerUser.getPassword().isBlank()) {
+                if (validateUser(registerUser)) {
                     user.setUserName(registerUser.getUserName());
                     user.setPassword(new BCryptPasswordEncoder().encode(registerUser.getPassword()));
                     user.setEnabled(true);
@@ -114,5 +115,15 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
         }
 
+    }
+
+
+    private Boolean validateUser(RegisterUser user) throws RegistrationValidationException {
+        if (user.getUserName().isBlank() || user.getPassword().isBlank())
+            throw new RegistrationValidationException(" empty username or Password");
+        String userName = user.getUserName();
+        if (!userName.matches("[a-z0-9\\.\\-\\@]+"))
+            throw new RegistrationValidationException(" username can contain only alphabets, numbers and '.','-' and '@'");
+        return Boolean.TRUE;
     }
 }
