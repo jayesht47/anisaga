@@ -41,10 +41,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUserName(String userName) {
+    public User getUserByUserName(String userName) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUserName(userName);
         if (user.isPresent()) return user.get();
-        return null; // user not found
+        throw new UsernameNotFoundException(String.format("userName not found for user %s",userName));
     }
 
 }
