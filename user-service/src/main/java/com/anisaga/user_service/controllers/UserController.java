@@ -22,12 +22,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/user/{userId}")
-    public User getUserByUserId(@PathVariable("userId") String userId) {
-        Optional<User> user = userService.getUserByUserId(userId);
-        if (user.isPresent()) return user.get();
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid userId");
+
+    @GetMapping("/user/{userName}")
+    public User getUserByUserName(@PathVariable("userName") String userName) {
+        return userService.getUserByUserName(userName);
     }
+
 
     @DeleteMapping("/user/{userId}")
     public void deleteUserByUserId(@PathVariable("userId") String userId) {
