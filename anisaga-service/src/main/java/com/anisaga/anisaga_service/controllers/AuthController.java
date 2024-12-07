@@ -121,7 +121,7 @@ public class AuthController {
         if (user.getUserName().isBlank() || user.getPassword().isBlank())
             throw new RegistrationValidationException(" empty username or Password");
         String userName = user.getUserName();
-        if (!userName.matches("[a-z0-9\\.\\-\\@]+"))
+        if (!userName.matches("[a-zA-Z0-9\\.\\-\\@]+"))
             throw new RegistrationValidationException(" username can contain only alphabets, numbers and '.','-' and '@'");
         return Boolean.TRUE;
     }
