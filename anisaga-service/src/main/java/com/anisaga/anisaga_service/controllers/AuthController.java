@@ -69,7 +69,7 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             responseMap.put("error", true);
             responseMap.put("message", "Invalid Login credentials");
-            log.error("Invalid Login credentials", e);
+            log.error("Invalid Login credentials");
             return ResponseEntity.status(401).body(responseMap);
         } catch (Exception e) {
             responseMap.put("error", true);
