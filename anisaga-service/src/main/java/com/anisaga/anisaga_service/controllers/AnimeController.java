@@ -1,9 +1,10 @@
 package com.anisaga.anisaga_service.controllers;
 
 import com.anisaga.anisaga_service.entities.Anime;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.time.Duration;
 
 @RestController
 @RequestMapping("/anime")
+@Slf4j
 public class AnimeController {
 
     private RestTemplate restTemplate;
@@ -46,15 +48,42 @@ public class AnimeController {
         ResponseEntity<String> response = restTemplate.getForEntity("https://kitsu.io/api/edge/anime/" + animeId, String.class);
         JsonObject respObject = JsonParser.parseString(response.getBody()).getAsJsonObject();
         JsonObject dataAttr = respObject.get("data").getAsJsonObject().get("attributes").getAsJsonObject();
+        return getAnimeFromJsonObject(dataAttr);
+    }
+
+    @GetMapping("/trending")
+    public List<Anime> getTrendingAnime(){
+        List<Anime> trendingAnime = new ArrayList<>();
+        ResponseEntity<String> response = restTemplate.getForEntity("https://kitsu.io/api/edge/trending/anime", String.class);
+        JsonObject respObject = JsonParser.parseString(response.getBody()).getAsJsonObject();
+        JsonArray animeArray = respObject.getAsJsonArray("data");
+        for(JsonElement anime : animeArray){
+            JsonObject animeObject = anime.getAsJsonObject().get("attributes").getAsJsonObject();
+            trendingAnime.add(getAnimeFromJsonObject(animeObject));
+        }
+        return trendingAnime;
+    }
+
+    /**
+     * A small utility method to get {@link Anime} Object from a {@link JsonObject}
+     * pass the JsonObject "attributes" from Kitsu APIs response
+     * @param animeObject
+     * @return
+     */
+    private Anime getAnimeFromJsonObject(JsonObject animeObject){
         Anime anime = new Anime();
-        anime.setName(dataAttr.get("titles").getAsJsonObject().get("en").getAsString());
-        anime.setSlug(dataAttr.get("slug").getAsString());
-        anime.setSynopsis(dataAttr.get("synopsis").getAsString());
-        anime.setStartDate(dataAttr.get("startDate").isJsonNull() ? null : dataAttr.get("startDate").getAsString());
-        anime.setEndDate(dataAttr.get("endDate").isJsonNull() ? null : dataAttr.get("endDate").getAsString());
-        anime.setEpisodeCount(dataAttr.get("episodeCount").isJsonNull() ? null : Integer.parseInt(dataAttr.get("episodeCount").getAsString()));
-        anime.setAverageRating(dataAttr.get("averageRating").isJsonNull() ? null : dataAttr.get("averageRating").getAsString());
-        anime.setYoutubeVideoId(dataAttr.get("youtubeVideoId").isJsonNull() ? null : dataAttr.get("youtubeVideoId").getAsString());
+        anime.setSlug(animeObject.get("slug").getAsString());
+        if (animeObject.get("canonicalTitle") != null) anime.setName(animeObject.get("canonicalTitle").getAsString());
+        else {
+            log.warn("Not able to get canonicalTitle using slug for {}",anime.getSlug());
+            anime.setName(anime.getSlug().replace("-", " "));
+        }
+        anime.setSynopsis(animeObject.get("synopsis").getAsString());
+        anime.setStartDate(animeObject.get("startDate").isJsonNull() ? null : animeObject.get("startDate").getAsString());
+        anime.setEndDate(animeObject.get("endDate").isJsonNull() ? null : animeObject.get("endDate").getAsString());
+        anime.setEpisodeCount(animeObject.get("episodeCount").isJsonNull() ? null : Integer.parseInt(animeObject.get("episodeCount").getAsString()));
+        anime.setAverageRating(animeObject.get("averageRating").isJsonNull() ? null : animeObject.get("averageRating").getAsString());
+        anime.setYoutubeVideoId(animeObject.get("youtubeVideoId").isJsonNull() ? null : animeObject.get("youtubeVideoId").getAsString());
         return anime;
     }
 
