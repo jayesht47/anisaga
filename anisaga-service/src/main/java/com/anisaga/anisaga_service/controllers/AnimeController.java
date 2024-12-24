@@ -2,6 +2,7 @@ package com.anisaga.anisaga_service.controllers;
 
 import com.anisaga.anisaga_service.entities.Anime;
 import com.google.gson.*;
+import io.micrometer.common.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -84,6 +85,7 @@ public class AnimeController {
         anime.setEpisodeCount(animeObject.get("episodeCount").isJsonNull() ? null : Integer.parseInt(animeObject.get("episodeCount").getAsString()));
         anime.setAverageRating(animeObject.get("averageRating").isJsonNull() ? null : animeObject.get("averageRating").getAsString());
         anime.setYoutubeVideoId(animeObject.get("youtubeVideoId").isJsonNull() ? null : animeObject.get("youtubeVideoId").getAsString());
+        anime.setPosterImage(animeObject.has("posterImage")?animeObject.get("posterImage").getAsJsonObject().get("large").getAsString(): "");
         return anime;
     }
 

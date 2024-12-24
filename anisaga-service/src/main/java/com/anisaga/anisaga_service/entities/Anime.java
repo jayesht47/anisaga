@@ -21,5 +21,5 @@ public class Anime {
 
     private String youtubeVideoId;
 
-
+    private String posterImage;
 }
