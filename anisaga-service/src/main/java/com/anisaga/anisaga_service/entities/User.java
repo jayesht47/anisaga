@@ -22,6 +22,7 @@ public class User implements UserDetails {
     private String userId;
     private String userName;
     private String displayName;
+    private List<String> likedAnime;
     @JsonIgnore
     private String password;
 

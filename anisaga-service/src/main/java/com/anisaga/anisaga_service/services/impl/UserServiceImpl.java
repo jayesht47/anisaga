@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,4 +52,23 @@ public class UserServiceImpl implements UserService {
         throw new UsernameNotFoundException(String.format("userName not found for user %s", userName));
     }
 
+    @Override
+    public void addToLikes(String userName, String animeSlug) {
+        User user = getUserByUserName(userName);
+        List<String> updatedLikedAnimeList = user.getLikedAnime() != null ? user.getLikedAnime() : new ArrayList<>();
+        if (!updatedLikedAnimeList.contains(animeSlug)) {
+            updatedLikedAnimeList.add(animeSlug);
+            user.setLikedAnime(updatedLikedAnimeList);
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    public void removeFromLikes(String userName, String animeSlug) {
+        User user = getUserByUserName(userName);
+        List<String> updatedLikedAnimeList = user.getLikedAnime() != null ? user.getLikedAnime() : new ArrayList<>();
+        updatedLikedAnimeList.remove(animeSlug);
+        user.setLikedAnime(updatedLikedAnimeList);
+        userRepository.save(user);
+    }
 }

@@ -17,5 +17,10 @@ public interface UserService {
     void deleteUser(User user);
 
     List<User> getAllUsers();
+
     User getUserByUserName(String userName);
+
+    void addToLikes(String userName, String animeSlug);
+
+    void removeFromLikes(String userName, String animeSlug);
 }
