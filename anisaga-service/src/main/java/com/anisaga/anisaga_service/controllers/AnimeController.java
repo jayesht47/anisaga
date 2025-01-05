@@ -38,7 +38,6 @@ public class AnimeController {
                     // Manually removing and setting 'Accept' Header as defaultHeader appends to default of application/json instead of replacing it
                     request.getHeaders().remove(HttpHeaders.ACCEPT);
                     request.getHeaders().add(HttpHeaders.ACCEPT, "application/vnd.api+json");
-                    logger.info("Headers are :: {}", request.getHeaders());
                     return execution.execute(request, body);
                 })).
                 build();
