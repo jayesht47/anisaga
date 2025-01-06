@@ -1,7 +1,9 @@
 package com.anisaga.anisaga_service.controllers;
 
 import com.anisaga.anisaga_service.entities.User;
+import com.anisaga.anisaga_service.exceptions.BadRequestException;
 import com.anisaga.anisaga_service.services.UserService;
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,5 +32,28 @@ public class UserController {
         Optional<User> user = userService.getUserByUserId(userId);
         if (user.isPresent()) userService.deleteUser(user.get());
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid userId");
+    }
+
+    @PostMapping("/user/{userName}/like/anime/add")
+    public void likeAnime(@PathVariable("userName") String userName, @RequestParam("slug") String animeSlug) throws BadRequestException {
+        if (animeSlug == null || animeSlug.isBlank()) throw new BadRequestException("animeSlug is missing");
+        userService.addToLikes(userName, animeSlug);
+    }
+
+
+    @PostMapping("/user/{userName}/like/anime/remove")
+    public void removeFromLikeAnime(@PathVariable("userName") String userName, @RequestParam("slug") String animeSlug) throws BadRequestException {
+        if (animeSlug == null || animeSlug.isBlank()) throw new BadRequestException("animeSlug is missing");
+        userService.removeFromLikes(userName, animeSlug);
+    }
+
+    @GetMapping("/user/{userName}/like/anime/contains")
+    public JsonObject checkIfIsLiked(@PathVariable("userName") String userName, @RequestParam("slug") String animeSlug) throws BadRequestException {
+        JsonObject response = new JsonObject();
+        if (animeSlug == null || animeSlug.isBlank()) throw new BadRequestException("animeSlug is missing");
+        User user = getUserByUserName(userName);
+        response.addProperty("error", false);
+        response.addProperty("isLiked", user.getLikedAnime().contains(animeSlug));
+        return response;
     }
 }
