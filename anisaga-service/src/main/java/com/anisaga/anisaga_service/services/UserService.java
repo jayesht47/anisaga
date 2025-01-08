@@ -23,4 +23,6 @@ public interface UserService {
     void addToLikes(String userName, String animeSlug);
 
     void removeFromLikes(String userName, String animeSlug);
+
+    List<String> getLikes(String userName);
 }

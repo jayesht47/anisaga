@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -55,5 +56,10 @@ public class UserController {
         response.addProperty("error", false);
         response.addProperty("isLiked", user.getLikedAnime().contains(animeSlug));
         return response;
+    }
+
+    @GetMapping("/user/{userName}/like/anime/list")
+    public List<String> getUserLikes(@PathVariable("userName")String userName){
+        return userService.getLikes(userName);
     }
 }
