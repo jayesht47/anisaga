@@ -65,6 +65,21 @@ public class AnimeServiceImpl implements AnimeService {
         return trendingAnime;
     }
 
+    @Override
+    public List<Anime> getAnimeListBySlugs(List<String> slugs) {
+        List<Anime> animeList = new ArrayList<>();
+        StringBuilder sb = new StringBuilder("https://kitsu.io/api/edge/anime?filter[slug]=");
+        slugs.forEach(e -> sb.append(e + ","));
+        sb.deleteCharAt(sb.length() - 1);
+        log.info("Generated url for getAnimeListBySlugs : {}", sb);
+        ResponseEntity<String> response = restTemplate.getForEntity(sb.toString(), String.class);
+        JsonObject respObject = JsonParser.parseString(response.getBody()).getAsJsonObject();
+        JsonArray responseArray = respObject.getAsJsonArray("data");
+        for (JsonElement responseObject : responseArray) {
+            animeList.add(getAnimeFromJsonObject(responseObject.getAsJsonObject(), false));
+        }
+        return animeList;
+    }
 
     /**
      * A small utility method to get {@link Anime} Object from a {@link JsonObject}

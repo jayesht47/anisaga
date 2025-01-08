@@ -7,9 +7,9 @@ public interface AnimeService {
 
     Anime getAnimeById(String animeId);
 
-
     Anime getAnimeBySlug(String slug);
 
-
     List<Anime> getTrendingAnime();
+
+    List<Anime> getAnimeListBySlugs(List<String> slugs);
 }

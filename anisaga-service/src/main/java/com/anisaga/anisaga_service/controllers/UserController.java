@@ -1,7 +1,9 @@
 package com.anisaga.anisaga_service.controllers;
 
+import com.anisaga.anisaga_service.entities.Anime;
 import com.anisaga.anisaga_service.entities.User;
 import com.anisaga.anisaga_service.exceptions.BadRequestException;
+import com.anisaga.anisaga_service.services.AnimeService;
 import com.anisaga.anisaga_service.services.UserService;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +23,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AnimeService animeService;
 
     @GetMapping("/user/{userName}")
     public User getUserByUserName(@PathVariable("userName") String userName) {
         return userService.getUserByUserName(userName);
     }
-
 
     @DeleteMapping("/user/{userId}")
     public void deleteUserByUserId(@PathVariable("userId") String userId) {
@@ -40,7 +43,6 @@ public class UserController {
         if (animeSlug == null || animeSlug.isBlank()) throw new BadRequestException("animeSlug is missing");
         userService.addToLikes(userName, animeSlug);
     }
-
 
     @PostMapping("/user/{userName}/like/anime/remove")
     public void removeFromLikeAnime(@PathVariable("userName") String userName, @RequestParam("slug") String animeSlug) throws BadRequestException {
@@ -59,7 +61,8 @@ public class UserController {
     }
 
     @GetMapping("/user/{userName}/like/anime/list")
-    public List<String> getUserLikes(@PathVariable("userName")String userName){
-        return userService.getLikes(userName);
+    public List<Anime> getUserLikes(@PathVariable("userName")String userName){
+        List<String> likedAnimeSlugs = userService.getLikes(userName);
+        return animeService.getAnimeListBySlugs(likedAnimeSlugs);
     }
 }
