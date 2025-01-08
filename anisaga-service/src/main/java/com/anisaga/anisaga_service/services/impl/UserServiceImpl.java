@@ -71,4 +71,10 @@ public class UserServiceImpl implements UserService {
         user.setLikedAnime(updatedLikedAnimeList);
         userRepository.save(user);
     }
+
+    @Override
+    public List<String> getLikes(String userName) {
+        User user = getUserByUserName(userName);
+        return user.getLikedAnime();
+    }
 }
