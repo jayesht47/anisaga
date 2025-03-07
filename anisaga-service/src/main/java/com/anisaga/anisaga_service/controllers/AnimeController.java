@@ -1,14 +1,13 @@
 package com.anisaga.anisaga_service.controllers;
 
 import com.anisaga.anisaga_service.entities.Anime;
+import com.anisaga.anisaga_service.exceptions.BadRequestException;
 import com.anisaga.anisaga_service.services.AnimeService;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/anime")
@@ -30,5 +29,10 @@ public class AnimeController {
     @GetMapping("/trending")
     public List<Anime> getTrendingAnime() {
         return animeService.getTrendingAnime();
+    }
+
+    @GetMapping("/search")
+    public List<Anime> searchAnimeByText(@RequestParam("searchText") String searchText) throws BadRequestException {
+        return animeService.searchAnimeByName(searchText);
     }
 }

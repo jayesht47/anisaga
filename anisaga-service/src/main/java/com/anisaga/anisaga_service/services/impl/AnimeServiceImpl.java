@@ -1,14 +1,17 @@
 package com.anisaga.anisaga_service.services.impl;
 
 import com.anisaga.anisaga_service.entities.Anime;
+import com.anisaga.anisaga_service.exceptions.BadRequestException;
 import com.anisaga.anisaga_service.services.AnimeService;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -124,5 +127,20 @@ public class AnimeServiceImpl implements AnimeService {
             genres.add(category.has("name") ? category.get("name").getAsString() : "");
         });
         return genres;
+    }
+
+    @Override
+    public List<Anime> searchAnimeByName(String searchInput) throws BadRequestException {
+        if (searchInput == null) throw new BadRequestException("SearchInput not provided");
+        if (searchInput.isBlank()) throw new BadRequestException("SearchInput cannot be blank");
+        List<Anime> animeList = new ArrayList<>();
+        String searchUrl = "https://kitsu.io/api/edge/anime?filter[text]=" + searchInput;
+        ResponseEntity<String> response = restTemplate.getForEntity(searchUrl, String.class);
+        JsonObject respObject = JsonParser.parseString(response.getBody()).getAsJsonObject();
+        JsonArray animeArray = respObject.get("data").getAsJsonArray();
+        for (JsonElement animeObject : animeArray) {
+            animeList.add(getAnimeFromJsonObject(animeObject.getAsJsonObject(), false));
+        }
+        return animeList;
     }
 }
