@@ -41,15 +41,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((requests) -> requests
+                .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/", "/auth/**").permitAll()
                         .requestMatchers("/", "/anime/**").permitAll()
+                        .requestMatchers("/", "/ai/**").permitAll()
                         .requestMatchers("/users/user/**").access(userPathAuthManager)
                         .requestMatchers("/admin/**").hasAuthority("ROLE_admin")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                .csrf((csrf) -> csrf.disable())
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(httpSecuritySessionManagementConfigurer ->
                         httpSecuritySessionManagementConfigurer
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -58,7 +59,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
+    public AuthenticationManager authenticationManagerBean() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailService);
         daoAuthenticationProvider.setPasswordEncoder(new BCryptPasswordEncoder());
