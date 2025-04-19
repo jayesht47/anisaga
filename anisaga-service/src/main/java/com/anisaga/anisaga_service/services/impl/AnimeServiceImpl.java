@@ -133,6 +133,8 @@ public class AnimeServiceImpl implements AnimeService {
     public List<Anime> searchAnimeByName(String searchInput) throws BadRequestException {
         if (searchInput == null) throw new BadRequestException("SearchInput not provided");
         if (searchInput.isBlank()) throw new BadRequestException("SearchInput cannot be blank");
+        if (searchInput.strip().length() < 3)
+            throw new BadRequestException("SearchInput must be atleast 3 characters long");
         List<Anime> animeList = new ArrayList<>();
         String searchUrl = "https://kitsu.io/api/edge/anime?filter[text]=" + searchInput;
         ResponseEntity<String> response = restTemplate.getForEntity(searchUrl, String.class);
