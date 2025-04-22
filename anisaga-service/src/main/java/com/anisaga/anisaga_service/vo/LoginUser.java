@@ -1,4 +1,4 @@
-package com.anisaga.anisaga_service.VO;
+package com.anisaga.anisaga_service.vo;
 
 import lombok.Data;
 
