@@ -1,8 +1,12 @@
 package com.anisaga.anisaga_service.services.impl;
 
+import com.anisaga.anisaga_service.entities.Anime;
 import com.anisaga.anisaga_service.entities.User;
+import com.anisaga.anisaga_service.exceptions.BadRequestException;
 import com.anisaga.anisaga_service.exceptions.DuplicateUserNameException;
 import com.anisaga.anisaga_service.repositories.UserRepository;
+import com.anisaga.anisaga_service.services.AiService;
+import com.anisaga.anisaga_service.services.AnimeService;
 import com.anisaga.anisaga_service.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +21,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AiService aiService;
+
+    @Autowired
+    private AnimeService animeService;
 
     @Override
     public User upsertUser(User user) throws DuplicateUserNameException {
@@ -76,5 +86,26 @@ public class UserServiceImpl implements UserService {
     public List<String> getLikes(String userName) {
         User user = getUserByUserName(userName);
         return user.getLikedAnime();
+    }
+
+    @Override
+    public List<Anime> getRecommendations(String userName) {
+        User user = getUserByUserName(userName);
+        List<String> recommendations = user.getRecommendations();
+        if (recommendations != null && !recommendations.isEmpty())
+            return animeService.getAnimeListBySlugs(user.getRecommendations());
+        return new ArrayList<>();
+    }
+
+
+    @Override
+    public void updateRecommendations(String userName) throws BadRequestException {
+        User user = getUserByUserName(userName);
+        List<String> likes = user.getLikedAnime();
+        List<String> recommendationSlugs = new ArrayList<>();
+        List<Anime> recommendations = aiService.getAnimeRecommendations(likes);
+        recommendations.forEach(anime -> recommendationSlugs.add(anime.getSlug()));
+        user.setRecommendations(recommendationSlugs);
+        userRepository.save(user);
     }
 }

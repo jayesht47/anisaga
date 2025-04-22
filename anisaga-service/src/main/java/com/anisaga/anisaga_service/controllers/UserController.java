@@ -5,6 +5,7 @@ import com.anisaga.anisaga_service.entities.User;
 import com.anisaga.anisaga_service.exceptions.BadRequestException;
 import com.anisaga.anisaga_service.services.AnimeService;
 import com.anisaga.anisaga_service.services.UserService;
+import com.anisaga.anisaga_service.vo.UserRecommendation;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +62,20 @@ public class UserController {
     }
 
     @GetMapping("/user/{userName}/like/anime/list")
-    public List<Anime> getUserLikes(@PathVariable("userName")String userName){
+    public List<Anime> getUserLikes(@PathVariable("userName") String userName) {
         List<String> likedAnimeSlugs = userService.getLikes(userName);
         return animeService.getAnimeListBySlugs(likedAnimeSlugs);
+    }
+
+    @PostMapping("/user/{userName}/recommendations")
+    public List<Anime> getUserRecommendations(@PathVariable("userName") String userName,
+                                              @RequestBody UserRecommendation userRecommendation) throws BadRequestException {
+        boolean regenRequired = userRecommendation.isRegenRecommendations();
+        List<Anime> recommendations = userService.getRecommendations(userName);
+        if (recommendations.isEmpty() || regenRequired) {
+            userService.updateRecommendations(userName);
+            recommendations = userService.getRecommendations(userName);
+        }
+        return recommendations;
     }
 }

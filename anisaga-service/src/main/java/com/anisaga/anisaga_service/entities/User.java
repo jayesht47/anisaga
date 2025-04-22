@@ -23,6 +23,7 @@ public class User implements UserDetails {
     private String userName;
     private String displayName;
     private List<String> likedAnime;
+    private List<String> recommendations;
     @JsonIgnore
     private String password;
 
