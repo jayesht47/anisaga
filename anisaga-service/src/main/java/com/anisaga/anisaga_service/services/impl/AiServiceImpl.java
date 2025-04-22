@@ -52,7 +52,6 @@ public class AiServiceImpl implements AiService {
         HttpEntity<String> httpEntity = new HttpEntity<>(requestBody.toString());
         ResponseEntity<String> response = restTemplate.exchange(finalURL, HttpMethod.POST, httpEntity, String.class);
         JsonArray responseArray = JsonParser.parseString(response.getBody()).getAsJsonArray();
-        log.info("responseArray is {}", responseArray);
         List<String> recommendationAnimeNames = new ArrayList<>();
         responseArray.forEach(e -> {
             JsonObject anime = e.getAsJsonObject();
