@@ -1,7 +1,7 @@
 package com.anisaga.anisaga_service.controllers;
 
-import com.anisaga.anisaga_service.VO.LoginUser;
-import com.anisaga.anisaga_service.VO.RegisterUser;
+import com.anisaga.anisaga_service.vo.LoginUser;
+import com.anisaga.anisaga_service.vo.RegisterUser;
 import com.anisaga.anisaga_service.entities.User;
 import com.anisaga.anisaga_service.exceptions.DuplicateUserNameException;
 import com.anisaga.anisaga_service.exceptions.RegistrationValidationException;
