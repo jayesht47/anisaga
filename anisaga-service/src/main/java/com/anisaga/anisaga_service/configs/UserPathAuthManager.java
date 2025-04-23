@@ -27,6 +27,7 @@ public class UserPathAuthManager implements AuthorizationManager<RequestAuthoriz
             String userName = getUserNameFromServletPath(servletPath);
             if (userName.isBlank()) return new AuthorizationDecision(false);
             String requestHeader = object.getRequest().getHeader("Authorization");
+            if(requestHeader == null) throw  new IllegalArgumentException("Authorization header is missing!");
             String token = requestHeader.substring(7);
             String userNameFromToken = jwtUtil.getUserNameFromToken(token);
             Boolean isAdmin = request.isUserInRole("ROLE_admin");
