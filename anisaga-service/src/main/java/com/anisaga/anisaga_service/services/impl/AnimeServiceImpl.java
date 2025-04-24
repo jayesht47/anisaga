@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,10 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -71,15 +75,43 @@ public class AnimeServiceImpl implements AnimeService {
     @Override
     public List<Anime> getAnimeListBySlugs(List<String> slugs) {
         List<Anime> animeList = new ArrayList<>();
-        StringBuilder sb = new StringBuilder("https://kitsu.io/api/edge/anime?filter[slug]=");
-        slugs.forEach(e -> sb.append(e + ","));
-        sb.deleteCharAt(sb.length() - 1);
-        log.info("Generated url for getAnimeListBySlugs : {}", sb);
-        ResponseEntity<String> response = restTemplate.getForEntity(sb.toString(), String.class);
-        JsonObject respObject = JsonParser.parseString(response.getBody()).getAsJsonObject();
-        JsonArray responseArray = respObject.getAsJsonArray("data");
-        for (JsonElement responseObject : responseArray) {
-            animeList.add(getAnimeFromJsonObject(responseObject.getAsJsonObject(), false));
+        String baseuri = "https://kitsu.io/api/edge/anime";
+        StringBuilder slugsSB = new StringBuilder();
+        slugs.forEach(e -> slugsSB.append(e).append(","));
+        slugsSB.deleteCharAt(slugsSB.length() - 1);
+
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("page[limit]", "20");
+        queryParams.add("page[offset]", "0");
+        queryParams.add("filter[slug]", slugsSB.toString());
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(baseuri)
+                .queryParams(queryParams);
+        String uri = uriBuilder.build().toUriString();
+        ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+        JsonObject respObject = JsonParser.parseString(Objects.requireNonNull(response.getBody())).getAsJsonObject();
+        int count = respObject.get("meta").getAsJsonObject().get("count").getAsInt();
+        if (count < 20) {
+            JsonArray responseArray = respObject.getAsJsonArray("data");
+            for (JsonElement responseObject : responseArray) {
+                animeList.add(getAnimeFromJsonObject(responseObject.getAsJsonObject(), false));
+            }
+        } else {
+            int offset = 0;
+            int maxCount = 10;
+            int counter = 0;
+            while (count > 20 && counter < maxCount) {
+                counter += 1;
+                count = count - 20;
+                offset += 20;
+                uriBuilder.replaceQueryParam("page[offset]", offset);
+                uri = uriBuilder.build().toUriString();
+                response = restTemplate.getForEntity(uri, String.class);
+                respObject = JsonParser.parseString(Objects.requireNonNull(response.getBody())).getAsJsonObject();
+                JsonArray responseArray = respObject.getAsJsonArray("data");
+                for (JsonElement responseObject : responseArray) {
+                    animeList.add(getAnimeFromJsonObject(responseObject.getAsJsonObject(), false));
+                }
+            }
         }
         return animeList;
     }
