@@ -109,7 +109,10 @@ public class UserServiceImpl implements UserService {
         List<String> likes = user.getLikedAnime();
         List<String> recommendationSlugs = new ArrayList<>();
         List<Anime> recommendations = aiService.getAnimeRecommendations(likes);
-        recommendations.forEach(anime -> recommendationSlugs.add(anime.getSlug()));
+        recommendations.forEach(anime -> {
+            if (!user.getLikedAnime().contains(anime.getSlug()))
+                recommendationSlugs.add(anime.getSlug());
+        });
         user.setRecommendations(recommendationSlugs);
         userRepository.save(user);
     }

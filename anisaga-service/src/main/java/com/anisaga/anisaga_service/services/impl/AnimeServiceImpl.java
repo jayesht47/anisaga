@@ -90,7 +90,7 @@ public class AnimeServiceImpl implements AnimeService {
         ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
         JsonObject respObject = JsonParser.parseString(Objects.requireNonNull(response.getBody())).getAsJsonObject();
         int count = respObject.get("meta").getAsJsonObject().get("count").getAsInt();
-        if (count < 20) {
+        if (count <= 20) {
             JsonArray responseArray = respObject.getAsJsonArray("data");
             for (JsonElement responseObject : responseArray) {
                 animeList.add(getAnimeFromJsonObject(responseObject.getAsJsonObject(), false));
