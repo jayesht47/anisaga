@@ -85,7 +85,7 @@ public class AuthController {
         try {
             if (registerUser != null) {
                 User user = new User();
-                if (validateUser(registerUser)) {
+                if (Boolean.TRUE.equals(validateUser(registerUser))) {
                     user.setUserName(registerUser.getUserName());
                     user.setPassword(new BCryptPasswordEncoder().encode(registerUser.getPassword()));
                     user.setEnabled(true);
