@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 @Data
@@ -24,6 +25,7 @@ public class User implements UserDetails {
     private String displayName;
     private List<String> likedAnime;
     private List<String> recommendations;
+    private HashMap<String,List<String>> customUserLists;
     @JsonIgnore
     private String password;
 

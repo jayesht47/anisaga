@@ -31,4 +31,14 @@ public interface UserService {
     List<Anime> getRecommendations(String userName);
 
     void updateRecommendations(String userName) throws BadRequestException;
+
+    void createNewCustomUserList(String userName, String newListName, List<String> entries) throws BadRequestException;
+
+    void addToExistingCustomUserList(String userName, String listName, String newEntry) throws BadRequestException;
+
+    void removeFromExistingCustomUserList(String userName, String listName, String entryToRemove) throws BadRequestException;
+
+    List<String> getExistinCustomUserList(String userName, String listName) throws BadRequestException;
+
+    void deleteExistingCustomUserList(String userName, String listName) throws BadRequestException;
 }

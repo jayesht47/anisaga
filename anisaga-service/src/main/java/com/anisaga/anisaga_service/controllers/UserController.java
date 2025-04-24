@@ -5,6 +5,7 @@ import com.anisaga.anisaga_service.entities.User;
 import com.anisaga.anisaga_service.exceptions.BadRequestException;
 import com.anisaga.anisaga_service.services.AnimeService;
 import com.anisaga.anisaga_service.services.UserService;
+import com.anisaga.anisaga_service.vo.NewCustomList;
 import com.anisaga.anisaga_service.vo.UserRecommendation;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -68,8 +69,7 @@ public class UserController {
     }
 
     @PostMapping("/user/{userName}/recommendations")
-    public List<Anime> getUserRecommendations(@PathVariable("userName") String userName,
-                                              @RequestBody UserRecommendation userRecommendation) throws BadRequestException {
+    public List<Anime> getUserRecommendations(@PathVariable("userName") String userName, @RequestBody UserRecommendation userRecommendation) throws BadRequestException {
         boolean regenRequired = userRecommendation.isRegenRecommendations();
         List<Anime> recommendations = userService.getRecommendations(userName);
         if (recommendations.isEmpty() || regenRequired) {
@@ -78,4 +78,34 @@ public class UserController {
         }
         return recommendations;
     }
+
+    @PostMapping("/user/{userName}/customList/add")
+    public void addNewCustomListToUser(@PathVariable("userName") String userName, @RequestBody NewCustomList newCustomList) throws BadRequestException {
+
+        userService.createNewCustomUserList(userName, newCustomList.getListName(), newCustomList.getEntries());
+    }
+
+    @PostMapping("/user/{userName}/customList/{listName}/add/entry/{entryName}")
+    public void addToExistingCustomList(@PathVariable("userName") String userName, @PathVariable("listName") String listName, @PathVariable("entryName") String entryName) throws BadRequestException {
+        userService.addToExistingCustomUserList(userName, listName, entryName);
+    }
+
+
+    @PostMapping("/user/{userName}/customList/{listName}/remove/entry/{entryName}")
+    public void removeFromExistingCustomList(@PathVariable("userName") String userName, @PathVariable("listName") String listName, @PathVariable("entryName") String entryName) throws BadRequestException {
+        userService.removeFromExistingCustomUserList(userName, listName, entryName);
+    }
+
+
+    @GetMapping("/user/{userName}/customList/{listName}")
+    public List<String> getExistingCustomList(@PathVariable("userName") String userName, @PathVariable("listName") String listName) throws BadRequestException {
+        return userService.getExistinCustomUserList(userName, listName);
+    }
+
+    @DeleteMapping("/user/{userName}/customList/{listName}")
+    public void removeCustomList(@PathVariable("userName") String userName, @PathVariable("listName") String listName) throws BadRequestException {
+        userService.deleteExistingCustomUserList(userName, listName);
+    }
+
+
 }
