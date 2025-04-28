@@ -96,6 +96,10 @@ public class UserController {
         userService.removeFromExistingCustomUserList(userName, listName, entryName);
     }
 
+    @GetMapping("/user/{userName}/customList")
+    public List<String> getExistingCustomList(@PathVariable("userName") String userName) throws BadRequestException {
+        return userService.getCustomListNames(userName);
+    }
 
     @GetMapping("/user/{userName}/customList/{listName}")
     public List<String> getExistingCustomList(@PathVariable("userName") String userName, @PathVariable("listName") String listName) throws BadRequestException {

@@ -40,5 +40,7 @@ public interface UserService {
 
     List<String> getExistinCustomUserList(String userName, String listName) throws BadRequestException;
 
+    List<String> getCustomListNames(String userName);
+
     void deleteExistingCustomUserList(String userName, String listName) throws BadRequestException;
 }

@@ -196,6 +196,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<String> getCustomListNames(String userName) {
+        User user = getUserByUserName(userName);
+        HashMap<String, List<String>> userCustomLists = user.getCustomUserLists();
+        if (userCustomLists != null)
+            return userCustomLists.keySet().stream().toList();
+        return new ArrayList<>();
+    }
+
+    @Override
     public void deleteExistingCustomUserList(String userName, String listName) throws BadRequestException {
         User user = getUserByUserName(userName);
         HashMap<String, List<String>> userCustomLists = user.getCustomUserLists();
