@@ -160,8 +160,8 @@ public class UserServiceImpl implements UserService {
 
         if (!userCustomLists.containsKey(listName))
             throw new BadRequestException(LIST_NAME_MISSING);
-
-        userCustomLists.get(listName).add(newEntry);
+        if (!userCustomLists.get(listName).contains(newEntry))
+            userCustomLists.get(listName).add(newEntry);
         userRepository.save(user);
     }
 
