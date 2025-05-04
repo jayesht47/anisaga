@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<String> getExistinCustomUserList(String userName, String listName) throws BadRequestException {
+    public List<Anime> getExistinCustomUserList(String userName, String listName) throws BadRequestException {
         User user = getUserByUserName(userName);
         HashMap<String, List<String>> userCustomLists = user.getCustomUserLists();
         if (listName == null || listName.isBlank())
@@ -192,7 +192,7 @@ public class UserServiceImpl implements UserService {
         if (!userCustomLists.containsKey(listName))
             throw new BadRequestException(LIST_NAME_MISSING);
 
-        return userCustomLists.get(listName);
+        return animeService.getAnimeListBySlugs(userCustomLists.get(listName));
     }
 
     @Override

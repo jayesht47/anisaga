@@ -38,7 +38,7 @@ public interface UserService {
 
     void removeFromExistingCustomUserList(String userName, String listName, String entryToRemove) throws BadRequestException;
 
-    List<String> getExistinCustomUserList(String userName, String listName) throws BadRequestException;
+    List<Anime> getExistinCustomUserList(String userName, String listName) throws BadRequestException;
 
     List<String> getCustomListNames(String userName);
 

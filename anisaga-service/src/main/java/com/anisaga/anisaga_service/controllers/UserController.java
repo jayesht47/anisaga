@@ -102,7 +102,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{userName}/customList/{listName}")
-    public List<String> getExistingCustomList(@PathVariable("userName") String userName, @PathVariable("listName") String listName) throws BadRequestException {
+    public List<Anime> getExistingCustomList(@PathVariable("userName") String userName, @PathVariable("listName") String listName) throws BadRequestException {
         return userService.getExistinCustomUserList(userName, listName);
     }
 
