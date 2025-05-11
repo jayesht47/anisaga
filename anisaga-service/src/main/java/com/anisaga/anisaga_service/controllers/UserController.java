@@ -91,13 +91,13 @@ public class UserController {
     }
 
 
-    @PostMapping("/user/{userName}/customList/{listName}/remove/entry/{entryName}")
+    @DeleteMapping("/user/{userName}/customList/{listName}/remove/entry/{entryName}")
     public void removeFromExistingCustomList(@PathVariable("userName") String userName, @PathVariable("listName") String listName, @PathVariable("entryName") String entryName) throws BadRequestException {
         userService.removeFromExistingCustomUserList(userName, listName, entryName);
     }
 
     @GetMapping("/user/{userName}/customList")
-    public List<String> getExistingCustomList(@PathVariable("userName") String userName) throws BadRequestException {
+    public List<String> getExistingCustomList(@PathVariable("userName") String userName) {
         return userService.getCustomListNames(userName);
     }
 
